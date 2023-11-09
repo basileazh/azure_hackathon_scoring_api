@@ -1,0 +1,90 @@
+image: python:3.9
+clone:
+  depth: full
+
+definitions:
+  caches:
+    pip: ~/.cache/pip
+    poetry: ~/.cache/pypoetry
+  steps:
+    - step: &test
+        name: Run Tests
+        caches:
+          - pip
+          - poetry
+        script:
+          - pip install poetry
+          - poetry config virtualenvs.create false
+          - poetry install
+          - export ADLS_ACCOUNT_URL=${ADLS_ACCOUNT_URL}
+          - export ADLS_ACCOUNT_SAS_TOKEN=${ADLS_ACCOUNT_SAS_TOKEN}
+          - poetry run pytest --junitxml=test-results.xml tests/
+        artifacts:
+          - test-results.xml
+
+    - step: &build
+        name: Build Container
+        services:
+          - docker
+        caches:
+          - docker
+        script: # Modify the commands below to build your repository.
+          # build the Docker image nisncdmdevacr01.azurecr.io/databricks/nissanscoring-dbx-img
+          - export IMAGE_FULL=$IMAGE_NAME:$BITBUCKET_BUILD_NUMBER
+          - docker build -t $IMAGE_FULL .
+            --build-arg ADLS_ACCOUNT_URL=${ADLS_ACCOUNT_URL}
+            --build-arg ADLS_ACCOUNT_SAS_TOKEN=${ADLS_ACCOUNT_SAS_TOKEN}
+          # authenticate with the Azure Container Registry
+          - echo $IMAGE_FULL > image.txt
+          - docker save ${IMAGE_FULL} --output "${IMAGE_FULL}.tar"
+        artifacts:
+          - "*.tar"
+          - image.txt
+    
+    - step: &deploy
+        name: Deploy container
+        image: mcr.microsoft.com/azure-cli
+        script:
+          - export IMAGE_FULL=$(cat image.txt)
+          - az login --service-principal --username $AZURE_CLIENT_ID --password $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+          - az acr login -n ${ACR_USERNAME}
+          # push the new Docker image to the registry
+          - docker load --input "${IMAGE_FULL}.tar"
+          - docker tag "${IMAGE_FULL}" "${CONTAINER_REGISTRY_URL}/${IMAGE_FULL}"
+          - docker push ${CONTAINER_REGISTRY_URL}/${IMAGE_FULL}
+          - az account set --subscription $AZURE_SUBSCRIPTION_ID
+          - az webapp config container set -g $AZURE_RESOURCE_GROUP -n $WEBAPP_NAME --docker-custom-image-name $CONTAINER_REGISTRY_URL/${IMAGE_FULL} --docker-registry-server-url ${ACR_USERNAME}.azurecr.io --docker-registry-server-user ${ACR_USERNAME} --docker-registry-server-password ${ACR_PASSWORD}
+        services:
+          - docker
+
+pipelines:
+  custom:
+    deploy-prd:
+      - step:
+          <<: *deploy
+          deployment: prd-deploy
+  branches:
+    dev:
+      - step:
+          <<: *test
+          deployment: dev-test
+      - step:
+          <<: *build
+          deployment: dev-build
+      - step:
+          <<: *deploy
+          deployment: dev-deploy
+    staging:
+      - step:
+          <<: *build
+          deployment: ppd-build
+      - step:
+          <<: *deploy
+          deployment: ppd-deploy
+    master: 
+      - step:
+          <<: *build
+          deployment: prd-build
+      - step:
+          <<: *deploy
+          deployment: prd-deploy

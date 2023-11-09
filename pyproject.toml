@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "hackathon-scoring-api"
+version = "0.1.0"
+description = ""
+authors = ["Basile EL AZHARI <basile.elazhari@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pydantic = "^2.3.1"
+pydantic-settings = "^2.0.3"
+pandas = "^1.5.2"
+fastapi = {version = "^0.103.2", extras = ["all"]}
+azure-storage-blob = "^12.18.3"
+azure-identity = "^1.14.1"
+azure-keyvault-secrets = "^4.7.0"
+jupyter = "^1.0.0"
+CryptPandas = "^1.0.0"
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.2"
+pytest-asyncio = "^0.21.0"
+pytest-mock = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
