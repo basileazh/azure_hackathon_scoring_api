@@ -5,9 +5,7 @@ from hackathon_scoring_api.core.config import get_setting
 from hackathon_scoring_api.core.log import logger
 
 
-def get_blob(
-        container: str,
-        file_path: str) -> BytesIO:
+def get_blob(container: str, file_path: str) -> BytesIO:
     """
     Retrieves a Pandas dataframe from ADLS
     :param container: ADLS container name (ex: "sbx-trusted")
@@ -29,17 +27,15 @@ def get_blob(
 
     # Create a blob service client
     blob_service_client = BlobServiceClient(
-        account_url=account_url,
-        credential=account_sas_token
+        account_url=account_url, credential=account_sas_token
     )
-    logger.info(f"Created blob service client")
+    logger.info("Created blob service client")
 
     # Download the ground truth file and convert to DataFrame
     file_content = BytesIO(
-        blob_service_client.get_blob_client(
-            container=container,
-            blob=file_path
-        ).download_blob().readall()
+        blob_service_client.get_blob_client(container=container, blob=file_path)
+        .download_blob()
+        .readall()
     )
     logger.info(f"Downloaded file {file_path} from container {container}")
 

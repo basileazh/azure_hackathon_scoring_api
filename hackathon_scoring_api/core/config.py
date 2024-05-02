@@ -8,6 +8,7 @@ class Settings(Enum):
     """
     Settings for the application
     """
+
     # ## API settings ## #
     api_results_endpoint = "xxx"
 

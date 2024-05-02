@@ -16,4 +16,3 @@ def retrieve_secret(secret_name: str) -> str:
     """
     secret = client.get_secret(secret_name)
     return secret.value
-

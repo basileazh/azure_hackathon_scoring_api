@@ -13,18 +13,18 @@ def test_ping():
 
 # Test the score endpoint
 def test_score_accuracy():
-    response = client.post("/score_accuracy/", json={
-        "team_id": "test_team",
-        "answers": {
-            "id": [123, 456, 789, 159],
-            "answer": ["a", "b", "a", "b"]
+    response = client.post(
+        "/score_accuracy/",
+        json={
+            "team_id": "test_team",
+            "answers": {"id": [123, 456, 789, 159], "answer": ["a", "b", "a", "b"]},
+            "ground_truth": {
+                "id": [123, 456, 789, 159],
+                "answer": ["a", "a", "a", "a"],
+            },
+            "send_to_api": "False",
         },
-        "ground_truth": {
-            "id": [123, 456, 789, 159],
-            "answer": ["a", "a", "a", "a"]
-        },
-        "send_to_api": "False",
-    })
+    )
     print(response.json())
     # assert response.status_code == 200
     assert response.json() == {

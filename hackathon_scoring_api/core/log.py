@@ -15,7 +15,7 @@ console_handler.setLevel(logging.INFO)
 # file_handler.setLevel(logging.INFO)
 
 # Create a Formatter for our log messages. This can be customized as needed.
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
 # Set the Formatter for our Handlers
 console_handler.setFormatter(formatter)

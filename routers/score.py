@@ -1,7 +1,8 @@
 import pandas as pd
-import requests
+import requests  # type: ignore
 from fastapi import APIRouter, HTTPException
-from typing import Dict, Union, Callable
+
+from collections.abc import Callable
 import cryptpandas as crp
 
 from hackathon_scoring_api.models.score_input import ScoreInput
@@ -13,7 +14,7 @@ router = APIRouter()
 
 
 @router.post("/score_accuracy/")
-async def score_accuracy(input_data: ScoreInput) -> Dict[str, Union[float, str]]:
+async def score_accuracy(input_data: ScoreInput) -> dict[str, float | str]:
     team_id = input_data.team_id
     df_answers = pd.DataFrame(input_data.answers)
     send_to_api = input_data.send_to_api
@@ -23,13 +24,18 @@ async def score_accuracy(input_data: ScoreInput) -> Dict[str, Union[float, str]]
 
         assert df_answers.shape[0] == df_ground_truth.shape[0], (
             f"ShapeError rows : The number of rows in the answers {df_answers.shape[0]} "
-            f"and ground truth {df_ground_truth.shape[0]} dataframes are not equal")
+            f"and ground truth {df_ground_truth.shape[0]} dataframes are not equal"
+        )
         assert df_answers.shape[1] == df_ground_truth.shape[1], (
             f"ShapeError columns :The number of columns in the answers {df_answers.shape[1]} "
-            f"and ground truth {df_ground_truth.shape[1]} dataframes are not equal")
-        assert set(df_answers.columns.tolist()) == set(df_ground_truth.columns.tolist()), (
+            f"and ground truth {df_ground_truth.shape[1]} dataframes are not equal"
+        )
+        assert set(df_answers.columns.tolist()) == set(
+            df_ground_truth.columns.tolist()
+        ), (
             f"ShapeError column names : The columns in the answers {set(df_answers.columns.tolist())} "
-            f"and ground truth {set(df_ground_truth.columns.tolist())} dataframes are not equal")
+            f"and ground truth {set(df_ground_truth.columns.tolist())} dataframes are not equal"
+        )
 
         # Set index to be able to merge the dataframes
         df_answers = df_answers.set_index(get_setting("index_colname"))
@@ -47,7 +53,11 @@ async def score_accuracy(input_data: ScoreInput) -> Dict[str, Union[float, str]]
             api_url = api_url + f"?id={team_id}&score={accuracy_score}"
             response = requests.put(api_url, json={})
 
-            return {"accuracy_score": accuracy_score, "team_id": team_id, "submission_status": response.status_code}
+            return {
+                "accuracy_score": accuracy_score,
+                "team_id": team_id,
+                "submission_status": response.status_code,
+            }
 
         return {"accuracy_score": accuracy_score, "team_id": team_id}
 
@@ -55,9 +65,11 @@ async def score_accuracy(input_data: ScoreInput) -> Dict[str, Union[float, str]]
         raise HTTPException(status_code=500, detail=str(e))
 
 
-def retrieve_ground_truth(input_data: ScoreInput,
-                          container: str = get_setting("container"),
-                          file_path: str = get_setting("file_path")) -> pd.DataFrame:
+def retrieve_ground_truth(
+    input_data: ScoreInput,
+    container: str = get_setting("container"),
+    file_path: str = get_setting("file_path"),
+) -> pd.DataFrame:
     """
     Retrieves the ground truth data from the input data or from ADLS
     :param input_data: Data from the request
@@ -75,11 +87,13 @@ def retrieve_ground_truth(input_data: ScoreInput,
 
 
 def get_ground_truth_data_from_adls(
-        container: str,
-        file_path: str,
-        is_ground_truth_data_encrypted: bool = get_setting("is_ground_truth_data_encrypted"),
-        cryptpandas_password: str = get_setting("cryptpandas_password"),
-        reading_function: Callable = pd.read_csv
+    container: str,
+    file_path: str,
+    is_ground_truth_data_encrypted: bool = get_setting(
+        "is_ground_truth_data_encrypted"
+    ),
+    cryptpandas_password: str = get_setting("cryptpandas_password"),
+    reading_function: Callable = pd.read_csv,
 ):
     """
     Fetches the ground truth data for accuracy scoring
@@ -95,14 +109,18 @@ def get_ground_truth_data_from_adls(
     if is_ground_truth_data_encrypted:
         logger.info("Trying to decrypt data from blob using cryptpandas")
         # Write the ground truth data to a file
-        with(open("file.crypt", "wb")) as f:
+        with open("file.crypt", "wb") as f:
             f.write(ground_truth_blob.getvalue())
 
         # Decrypt the ground truth data
-        ground_truth_df = crp.read_encrypted(path='file.crypt', password=cryptpandas_password)
+        ground_truth_df = crp.read_encrypted(
+            path="file.crypt", password=cryptpandas_password
+        )
     else:
         ground_truth_df = reading_function(ground_truth_blob, header=0)
-        logger.info(f"Converted file {file_path} to Pandas dataframe using {reading_function.__name__}")
+        logger.info(
+            f"Converted file {file_path} to Pandas dataframe using {reading_function.__name__}"
+        )
 
     return ground_truth_df
 
@@ -118,5 +136,8 @@ def calculate_accuracy_score(df: pd.DataFrame, df_gc: pd.DataFrame) -> float:
     assert df_merged.shape[0] == df_gc.shape[0], (
         f"ShapeError merge rows : The number of rows in the merged {df_merged.shape[0]} "
         f"and ground truth {df_gc.shape[0]} dataframes are not equal after the merge. "
-        f"Original answers dataframe: {df.shape[0]}.")
-    return len(df_merged[df_merged["answer_x"] == df_merged["answer_y"]]) / len(df_merged)
+        f"Original answers dataframe: {df.shape[0]}."
+    )
+    return len(df_merged[df_merged["answer_x"] == df_merged["answer_y"]]) / len(
+        df_merged
+    )
