@@ -1,6 +1,5 @@
 import os
 from enum import Enum
-import pandas as pd
 
 from .log import logger
 
@@ -21,8 +20,8 @@ class Settings(Enum):
     predictions_colname = "answer"
 
     # ## Key Vault ## #
-    use_key_vault = False
-    if (use_key_vault) & ("USE_KEY_VAULT" in os.environ.keys()):
+    use_key_vault: bool = False
+    if use_key_vault & ("USE_KEY_VAULT" in os.environ.keys()):
         logger.info("Retrieved USE_KEY_VAULT from environment variables")
         key_vault_name = os.environ["KEY_VAULT_NAME"]
         key_vault_uri = f"https://{key_vault_name}.vault.azure.net"

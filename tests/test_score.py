@@ -8,7 +8,7 @@ from routers.score import (
     get_ground_truth_data_from_adls,
     score_accuracy,
 )
-from models.score_input import ScoreInput
+from hackathon_scoring_api.models.score_input import ScoreInput
 
 
 def test_calculate_accuracy_score():

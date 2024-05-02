@@ -4,10 +4,10 @@ from fastapi import APIRouter, HTTPException
 from typing import Dict, Union, Callable
 import cryptpandas as crp
 
-from models.score_input import ScoreInput
-from services.adls import get_blob
-from core.config import get_setting
-from core.log import logger
+from hackathon_scoring_api.models.score_input import ScoreInput
+from hackathon_scoring_api.services.adls import get_blob
+from hackathon_scoring_api.core.config import get_setting
+from hackathon_scoring_api.core.log import logger
 
 router = APIRouter()
 

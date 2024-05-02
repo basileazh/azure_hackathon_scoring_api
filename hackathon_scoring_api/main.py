@@ -1,6 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
-from core.log import logger
+from hackathon_scoring_api.core.log import logger
 from routers import score
 
 # Start the app

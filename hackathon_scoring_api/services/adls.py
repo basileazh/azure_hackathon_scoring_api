@@ -1,10 +1,8 @@
-import pandas as pd
 from io import BytesIO
-from typing import Callable
 from azure.storage.blob import BlobServiceClient
 
-from core.config import get_setting
-from core.log import logger
+from hackathon_scoring_api.core.config import get_setting
+from hackathon_scoring_api.core.log import logger
 
 
 def get_blob(
@@ -19,7 +17,7 @@ def get_blob(
     logger.info(f"Retrieving file {file_path} from container {container}")
 
     if get_setting("use_key_vault"):
-        from services.key_vault import retrieve_secret
+        from hackathon_scoring_api.services.key_vault import retrieve_secret
 
         # OPTION 1 Here, we are attending to retrieve the ADLS access token from the key vault
         account_url = retrieve_secret(get_setting("adls_account_url_secret_name"))
