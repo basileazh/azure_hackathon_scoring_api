@@ -20,7 +20,7 @@ docker-start:
 	docker start $(DOCKER_IMAGE)
 
 .PHONY: docker-init
-docker-start: docker-build docker-run
+docker-init: docker-build docker-run
 
 .PHONY: docker-push
 docker-push:

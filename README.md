@@ -24,9 +24,19 @@ poetry run python hackathon_scoring_api/main.py
 
 ##### With Make
 
+For the first time, you need to install the dependencies and start the docker container:
 ```bash
-make install
-dotenv -e environments/dev/.env make docker-start
+dotenv -e env/dev/.env make docker-init
+```
+
+For subsequent runs, you can just start the docker container:
+```bash
+dotenv -e env/dev/.env make docker-init
+```
+
+To stop the docker container:
+```bash
+dotenv -e env/dev/.env make docker-stop
 ```
 
 ##### Without Make
