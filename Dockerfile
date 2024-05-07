@@ -19,21 +19,19 @@ ENV ADLS_ACCOUNT_URL=${ADLS_ACCOUNT_URL}
 ENV ADLS_ACCOUNT_SAS_TOKEN=${ADLS_ACCOUNT_SAS_TOKEN}
 
 # Set the working directory
-WORKDIR .
+WORKDIR /app
+ENV PYTHONPATH /app
 
 # Copy the current directory contents into the container
-COPY pyproject.toml poetry.lock hackathon_scoring_api/ ./
+COPY pyproject.toml poetry.lock ./
+COPY hackathon_scoring_api ./hackathon_scoring_api
 
-#ENV PYTHONPATH=${PYTHONPATH}:${PWD}
 
 RUN pip install --upgrade pip \
     && pip install poetry==1.7.0 \
-    && poetry export -f requirements.txt --output requirements.txt \
-    && pip install -r requirements.txt
-
-# Copy the current directory contents into the container
-COPY . .
+    && poetry config virtualenvs.create false \
+    && poetry install
 
 # Run the command
 EXPOSE 8080
-CMD ["python", "hackathon_scoring_api/main.py"]
+CMD ["poetry", "run", "python", "hackathon_scoring_api/main.py"]
