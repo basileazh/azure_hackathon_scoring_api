@@ -5,6 +5,39 @@ at the end of their notebooks to submit their results.
 
 ## Usage
 
+If you use Make, make sure you have a `.env` file with the following content:
+    
+```bash
+DOCKER_IMAGE=hackathon-scoring-api
+```
+
+### Spin up the API
+
+#### Using bash
+
+```bash
+poetry install
+poetry run python hackathon_scoring_api/main.py
+```
+
+#### Using Docker
+
+##### With Make
+
+```bash
+make install
+dotenv -e environments/dev/.env make docker-start
+```
+
+##### Without Make
+
+```bash
+poetry install
+docker build -t hackathon-scoring-api .
+docker run -p 8080:8080 hackathon-scoring-api
+```
+
+
 ### Endpoints
 
 - `/ping` - GET - Returns a ping message
@@ -41,7 +74,7 @@ print(response.text)
 - Uvicorn
 - Pydantic
 
-## Installation
+## Storing ground_truth in ADLS
 
 ### Environment variables
 
@@ -69,7 +102,7 @@ export  AZURE_CLIENT_ID=<your_azure_client_id>
 export  AZURE_CLIENT_SECRET=<your_azure_client_secret>
 export  AZURE_TENANT_ID=<your_azure_tenant_id>
 export  KEY_VAULT_URL=<your_key_vault_url>
-poetry run python main.py
+poetry run python hackathon_scoring_api/main.py
 ```
 
 Using docker:
