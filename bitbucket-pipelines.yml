@@ -29,7 +29,6 @@ definitions:
         caches:
           - docker
         script: # Modify the commands below to build your repository.
-          # build the Docker image nisncdmdevacr01.azurecr.io/databricks/nissanscoring-dbx-img
           - export IMAGE_FULL=$IMAGE_NAME:$BITBUCKET_BUILD_NUMBER
           - docker build -t $IMAGE_FULL .
             --build-arg ADLS_ACCOUNT_URL=${ADLS_ACCOUNT_URL}
@@ -58,33 +57,20 @@ definitions:
           - docker
 
 pipelines:
-  custom:
-    deploy-prd:
-      - step:
-          <<: *deploy
-          deployment: prd-deploy
   branches:
-    dev:
+    sandbox:
       - step:
           <<: *test
-          deployment: dev-test
+          deployment: prd-test
+    master:
       - step:
           <<: *build
           deployment: dev-build
       - step:
           <<: *deploy
           deployment: dev-deploy
-    staging:
+  pull-requests:
+    sandbox:
       - step:
-          <<: *build
-          deployment: ppd-build
-      - step:
-          <<: *deploy
-          deployment: ppd-deploy
-    master: 
-      - step:
-          <<: *build
-          deployment: prd-build
-      - step:
-          <<: *deploy
-          deployment: prd-deploy
+          <<: *test
+          deployment: prd-test
