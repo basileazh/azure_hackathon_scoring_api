@@ -27,7 +27,7 @@ dist/
 .idea/
 
 # dev
-notebooks/
+hackathon_scoring_api/notebooks/
 
 # Unit test reports
 TEST*.xml
