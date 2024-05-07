@@ -10,7 +10,7 @@ from hackathon_scoring_api.services.adls import get_blob
 from hackathon_scoring_api.core.config import get_setting
 from hackathon_scoring_api.core.log import logger
 
-router = APIRouter()
+router = APIRouter()  # Add prefix if needed
 
 
 @router.post("/score_accuracy/")
@@ -23,17 +23,17 @@ async def score_accuracy(input_data: ScoreInput) -> dict[str, float | str]:
         df_ground_truth = retrieve_ground_truth(input_data)
 
         assert df_answers.shape[0] == df_ground_truth.shape[0], (
-            f"ShapeError rows : The number of rows in the answers {df_answers.shape[0]} "
+            f"ShapeError rows : Number of rows in the answers {df_answers.shape[0]} "
             f"and ground truth {df_ground_truth.shape[0]} dataframes are not equal"
         )
         assert df_answers.shape[1] == df_ground_truth.shape[1], (
-            f"ShapeError columns :The number of columns in the answers {df_answers.shape[1]} "
+            f"ShapeError columns :Number of columns in the answers {df_answers.shape[1]} "
             f"and ground truth {df_ground_truth.shape[1]} dataframes are not equal"
         )
         assert set(df_answers.columns.tolist()) == set(
             df_ground_truth.columns.tolist()
         ), (
-            f"ShapeError column names : The columns in the answers {set(df_answers.columns.tolist())} "
+            f"ShapeError column names : Columns in the answers {set(df_answers.columns.tolist())} "
             f"and ground truth {set(df_ground_truth.columns.tolist())} dataframes are not equal"
         )
 

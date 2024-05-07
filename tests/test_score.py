@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 from fastapi import HTTPException
 
-from routers.score import (
+from hackathon_scoring_api.routers.score import (
     retrieve_ground_truth,
     calculate_accuracy_score,
     get_ground_truth_data_from_adls,
