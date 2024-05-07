@@ -16,6 +16,10 @@ docker-run:
 	docker run -d -p 8080:8080 --name $(DOCKER_IMAGE) $(DOCKER_IMAGE)
 
 .PHONY: docker-start
+docker-start:
+	docker start $(DOCKER_IMAGE)
+
+.PHONY: docker-init
 docker-start: docker-build docker-run
 
 .PHONY: docker-push
@@ -32,6 +36,10 @@ docker-login:
 .PHONY: docker-kill
 docker-kill:
 	docker kill $(DOCKER_IMAGE)
+
+.PHONY: docker-stop
+docker-stop:
+	docker stop $(DOCKER_IMAGE)
 
 .PHONY: docker-clean
 docker-clean:
