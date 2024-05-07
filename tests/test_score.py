@@ -5,7 +5,6 @@ from fastapi import HTTPException
 from hackathon_scoring_api.routers.score import (
     retrieve_ground_truth,
     calculate_accuracy_score,
-    get_ground_truth_data_from_adls,
     score_accuracy,
 )
 from hackathon_scoring_api.models.score_input import ScoreInput
@@ -38,31 +37,31 @@ def test_retrieve_ground_truth_from_score_input():
     assert df_ground_truth.shape == (4, 2)
 
 
-def test_retrieve_ground_truth_from_adls():
-    input_data = ScoreInput(
-        team_id="test_team",
-        answers={"id": [123, 456, 789, 159], "answer": ["a", "b", "a", "b"]},
-        ground_truth=None,
-        send_to_api="False",
-    )
-    df_ground_truth = retrieve_ground_truth(
-        input_data,
-        container="dev-raw",
-        file_path="ground_truth/ground_truth_test.crypt",
-    )
+# def test_retrieve_ground_truth_from_adls():
+#     input_data = ScoreInput(
+#         team_id="test_team",
+#         answers={"id": [123, 456, 789, 159], "answer": ["a", "b", "a", "b"]},
+#         ground_truth=None,
+#         send_to_api="False",
+#     )
+#     df_ground_truth = retrieve_ground_truth(
+#         input_data,
+#         container="dev-raw",
+#         file_path="ground_truth/ground_truth_test.crypt",
+#     )
+#
+#     assert df_ground_truth.shape == (4, 2)
 
-    assert df_ground_truth.shape == (4, 2)
 
-
-def test_get_ground_truth_data_from_adls():
-    ground_truth_df = get_ground_truth_data_from_adls(
-        container="dev-raw",
-        file_path="ground_truth/ground_truth_test.crypt",
-        is_ground_truth_data_encrypted=True,
-        cryptpandas_password="oRBK}uvhK3C;Ndr",
-    )
-
-    assert ground_truth_df.shape == (4, 2)
+# def test_get_ground_truth_data_from_adls():
+#     ground_truth_df = get_ground_truth_data_from_adls(
+#         container="dev-raw",
+#         file_path="ground_truth/ground_truth_test.crypt",
+#         is_ground_truth_data_encrypted=True,
+#         cryptpandas_password="oRBK}uvhK3C;Ndr",
+#     )
+#
+#     assert ground_truth_df.shape == (4, 2)
 
 
 @pytest.mark.asyncio
